@@ -1,0 +1,37 @@
+# .github/workflows/weekly-outlook.yml
+name: Weekly Market Outlook
+
+on:
+  schedule:
+    # Runs every Sunday at 7:00 PM EST (11:00 PM UTC)
+    - cron: '0 23 * * 0'
+  # Allow manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  send-weekly-outlook:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run weekly market outlook bot
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+      run: |
+        echo "Starting weekly market outlook bot..."
+        python main.py
+        echo "Weekly outlook completed."
